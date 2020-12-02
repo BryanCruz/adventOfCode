@@ -5,6 +5,8 @@
   "author": "Bryan Bialokur da Cruz <bryan.bialokur@gmail.com>",
   "license": "UNLICENSE",
   "devDependencies": {
+    "eslint": "^7.14.0",
+    "prettier": "^2.2.1",
     "ts-node": "^9.0.0",
     "typescript": "^4.1.2"
   }
