@@ -1,3 +1,5 @@
+export {};
+
 const main = (vs: string[], slopeX: number, slopeY: number) => {
   let [x, y] = [0, 0];
   let count = 0;

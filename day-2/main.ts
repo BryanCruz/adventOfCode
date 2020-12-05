@@ -1,3 +1,5 @@
+export {};
+
 const isValid = (pwdPolicy: string): boolean => {
   const [_, min, max, c, w] = pwdPolicy.match(/(\d+)\-(\d+) (\w): (\w+)/);
 
