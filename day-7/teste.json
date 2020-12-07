@@ -1,0 +1,107 @@
+[
+    {
+        "src": "light red ",
+        "dests": [
+            {
+                "n": 1,
+                "name": "bright white"
+            },
+            {
+                "n": 2,
+                "name": "muted yellow"
+            }
+        ]
+    },
+    {
+        "src": "dark orange ",
+        "dests": [
+            {
+                "n": 3,
+                "name": "bright white"
+            },
+            {
+                "n": 4,
+                "name": "muted yellow"
+            }
+        ]
+    },
+    {
+        "src": "bright white ",
+        "dests": [
+            {
+                "n": 1,
+                "name": "shiny gold"
+            }
+        ]
+    },
+    {
+        "src": "muted yellow ",
+        "dests": [
+            {
+                "n": 2,
+                "name": "shiny gold"
+            },
+            {
+                "n": 9,
+                "name": "faded blue"
+            }
+        ]
+    },
+    {
+        "src": "shiny gold ",
+        "dests": [
+            {
+                "n": 1,
+                "name": "dark olive"
+            },
+            {
+                "n": 2,
+                "name": "vibrant plum"
+            }
+        ]
+    },
+    {
+        "src": "dark olive ",
+        "dests": [
+            {
+                "n": 3,
+                "name": "faded blue"
+            },
+            {
+                "n": 4,
+                "name": "dotted black"
+            }
+        ]
+    },
+    {
+        "src": "vibrant plum ",
+        "dests": [
+            {
+                "n": 5,
+                "name": "faded blue"
+            },
+            {
+                "n": 6,
+                "name": "dotted black"
+            }
+        ]
+    },
+    {
+        "src": "faded blue ",
+        "dests": [
+            {
+                "n": 0,
+                "name": "any"
+            }
+        ]
+    },
+    {
+        "src": "dotted black ",
+        "dests": [
+            {
+                "n": 0,
+                "name": "any"
+            }
+        ]
+    }
+]
