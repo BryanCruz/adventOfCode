@@ -10,7 +10,7 @@ My resolutions to [Advent of Code 2020](https://adventofcode.com/2020/).
 ## Usage
 
 - `yarn install` - Install depencies
-- `npx ts-node day-x/main.ts` - Execute script from day x. The input file for day x is located at `day-x/input.txt` 
+- `npx ts-node day-x/main.ts` or `./run.sh` - Execute script from day x. The input file for day x is located at `day-x/input.txt`
 
 ## Disclaimer
 
