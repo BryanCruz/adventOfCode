@@ -2,14 +2,12 @@ import { readFileSync } from "fs";
 
 export {};
 
-const findSum2 = (vs: number[]) => {
-  vs.sort((a, b) => a - b);
-
+const findSum2 = (vs: number[], target = 2020) => {
   let [i1, i2] = [0, vs.length - 1];
   let sum = vs[i1] + vs[i2];
 
-  while (sum !== 2020) {
-    if (sum < 2020) {
+  while (sum !== target && i1 < i2) {
+    if (sum < target) {
       i1++;
     } else {
       i2--;
@@ -18,34 +16,20 @@ const findSum2 = (vs: number[]) => {
     sum = vs[i1] + vs[i2];
   }
 
-  return vs[i1] * vs[i2];
-};
-
-const findSum3 = (vs: number[]) => {
-  vs.sort((a, b) => a - b);
-
-  let [i1, i2, i3] = [0, Math.floor(vs.length / 2), vs.length - 1];
-  let sum = vs[i1] + vs[i2] + vs[i3];
-
-  while (sum !== 2020) {
-    if (sum < 2020 && i1 < i2) {
-      i1++;
-    } else if (sum < 2020) {
-      i2++;
-      i1 = 0;
-      i3 = vs.length - 1;
-    } else if (sum > 2020 && i2 < i3) {
-      i3--;
-    } else if (sum > 2020) {
-      i2--;
-      i1 = 0;
-      i3 = vs.length - 1;
-    }
-
-    sum = vs[i1] + vs[i2] + vs[i3];
+  if (i1 < i2) {
+    return vs[i1] * vs[i2];
   }
 
-  return vs[i1] * vs[i2] * vs[i3];
+  return 0;
+};
+
+const findSum3 = (vs: number[], target = 2020) => {
+  let result = 0;
+  vs.find((v, i) => {
+    result = v * findSum2(vs.slice(0, i).concat(vs.slice(i + 1)), target - v);
+    return result;
+  });
+  return result;
 };
 
 const vsT = readFileSync(`${__dirname}/inputT.txt`)
@@ -58,6 +42,8 @@ const vs = readFileSync(`${__dirname}/input.txt`)
   .split("\n")
   .map((n) => Number(n));
 
+vsT.sort((a, b) => a - b);
+vs.sort((a, b) => a - b);
 console.log("First Half");
 console.log("test", findSum2(vsT));
 console.log("final", findSum2(vs));
