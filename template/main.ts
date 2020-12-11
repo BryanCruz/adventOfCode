@@ -6,8 +6,9 @@ const main = (vs: string[]) => {};
 
 const main2 = (vs: string[]) => {};
 
-const vt = readFileSync(`${__dirname}/inputT.txt`).toString().split("\n");
-const v = readFileSync(`${__dirname}/input.txt`).toString().split("\n");
+const [vt, v] = ["inputT.txt", "input.txt"].map((fileName) =>
+  readFileSync(`${__dirname}/${fileName}`).toString().split("\n")
+);
 
 console.log("First Half");
 console.log("test", main(vt));
