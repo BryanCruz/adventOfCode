@@ -39,10 +39,6 @@ const computeExp = (exp: string[]): number => {
   let toCompute: [number, string?] = [0, "+"];
 
   while (queue.length) {
-    // console.log("\n");
-    // console.log(toCompute);
-    // console.log(queue.join(""));
-
     const nextToken = queue.shift();
     if (numbers.includes(nextToken)) {
       if (!toCompute[1]) {
@@ -65,13 +61,11 @@ const computeExp = (exp: string[]): number => {
     if (nextToken === "(") {
       const lastParenthesisIndex = findMatchingParenthesisIndex(queue);
       const subExp = queue.slice(0, lastParenthesisIndex);
-      // console.log("subExp:", subExp.join(""));
 
       let subExpResult = computeExp(subExp);
       toCompute = [compute(toCompute[1], toCompute[0], subExpResult)];
 
       queue = queue.slice(lastParenthesisIndex + 1);
-      // console.log("mod:", queue.join(""));
       continue;
     }
 
@@ -81,18 +75,70 @@ const computeExp = (exp: string[]): number => {
   return toCompute[0];
 };
 
+const computeExp2 = (exp: string[]): number => {
+  let queue = [...exp];
+  let toCompute: [number, string?] = [0, "+"];
+
+  while (queue.length) {
+    const nextToken = queue.shift();
+    if (numbers.includes(nextToken)) {
+      if (!toCompute[1]) {
+        throw Error("number not expected here");
+      }
+
+      toCompute = [compute(toCompute[1], toCompute[0], Number(nextToken))];
+      continue;
+    }
+
+    if (operations.includes(nextToken)) {
+      if (toCompute[1]) {
+        throw Error("operation not expected here");
+      }
+
+      toCompute[1] = nextToken;
+
+      if (toCompute[1] === "*") {
+        const remainingExpResult = computeExp2(queue);
+        return compute(toCompute[1], toCompute[0], remainingExpResult);
+      }
+
+      continue;
+    }
+
+    if (nextToken === "(") {
+      const lastParenthesisIndex = findMatchingParenthesisIndex(queue);
+      const subExp = queue.slice(0, lastParenthesisIndex);
+
+      let subExpResult = computeExp2(subExp);
+      toCompute = [compute(toCompute[1], toCompute[0], subExpResult)];
+
+      queue = queue.slice(lastParenthesisIndex + 1);
+      continue;
+    }
+
+    throw Error(`token not expected: ${nextToken}`);
+  }
+
+  return toCompute[0];
+};
 
 const main = (origVs: string[]) => {
   const vs = parseExps(origVs);
   const results = vs.map((exp) => {
     const r = computeExp(exp);
-    // console.log(`${exp.join("")} = ${r}`);
     return r;
   });
   return results.reduce((s, r) => s + r);
 };
 
 const main2 = (origVs: string[]) => {
+  const vs = parseExps(origVs);
+  const results = vs.map((exp) => {
+    const r = computeExp2(exp);
+    `${exp.join("")} = ${r}`;
+    return r;
+  });
+  return results.reduce((s, r) => s + r);
 };
 
 const [vt, v] = ["inputT.txt", "input.txt"].map((fileName) =>
@@ -105,4 +151,4 @@ console.log("final", main(v));
 console.log("==========");
 console.log("Second Half");
 console.log("test", main2(vt));
-// console.log("final", main2(v));
+console.log("final", main2(v));
