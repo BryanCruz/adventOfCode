@@ -48,80 +48,144 @@ const decodeMessage = (rules: rules, origMessage: string) => {
   return message;
 };
 
-const match = (a: string[], b: string[]) =>
-  a.length === b.length && a.every((v, i) => v === b[i]);
+const graphFromRules = (rules: rules) => {
+  const graph = new Map<string, string[]>();
 
-const solve = (targetRule: string[], message: string[]) => {
-  // console.log("target:", targetRule.join(","));
-  // console.log("message:", message.join(","));
-  // console.log("=====");
-  if (matchRules.has(message.join(","))) {
-    return matchRules.get(message.join(","));
-  }
+  Object.keys(rules).forEach((key) => {
+    const values = rules[key];
+    if (typeof values === "string") {
+      return;
+    }
 
-  if (match(targetRule, message)) {
-    matchRules.set(message.join(","), true);
-    return true;
-  }
+    values.forEach((out) => {
+      graph.set(out.join(","), (graph.get(out.join(",")) || []).concat([key]));
+    });
+  });
 
-  if (message.length <= 1 || targetRule.length <= 1) {
-    matchRules.set(message.join(","), false);
-    return false;
-  }
+  return graph;
+};
 
-  // override first 1
-  if (
-    solve(targetRule.slice(0, 1), message.slice(0, 1)) &&
-    solve(targetRule.slice(1), message.slice(1))
-  ) {
-    matchRules.set(message.join(","), true);
-    return true;
-  }
+const compute = (
+  message: string[],
+  graph: Map<string, string[]>,
+  rules: rules,
+  target: string[]
+) => {
+  let queue: Array<[string[], string[]]> = [[[...message], [...target]]];
 
-  // override first 2
-  for (let i = 0; i < message.length - 2; i++) {
-    const options = Object.keys(globalRules).filter(
-      (key) =>
-        typeof globalRules[key] !== "string" &&
-        (globalRules[key] as string[][]).some((v) =>
-          match(v, message.slice(i, i + 2))
-        )
+  while (queue.length > 0) {
+    console.log(queue.length);
+    queue.sort((a, b) =>
+      a[1].length - b[1].length < 0
+        ? -1
+        : a[1].length - b[1].length > 0
+        ? 1
+        : a[0].length - b[0].length
     );
 
-    // console.log("options to", message.slice(i, i + 2), options);
+    // console.log("\n");
+    // console.log(queue);
+    let [currMessage, currTarget] = queue.shift();
 
-    if (
-      options.some((key) =>
-        solve(
-          targetRule,
-          message
-            .slice(0, i)
-            .concat([key])
-            .concat(message.slice(i + 2))
-        )
-      )
-    ) {
-      matchRules.set(message.join(","), true);
+    if (currMessage.length === 0 && currTarget.length === 0) {
       return true;
+    }
+
+    if (currMessage.length === 0 || currTarget.length === 0) {
+      continue;
+    }
+
+    const currRule = currTarget.pop();
+    let currSub = currMessage.pop();
+
+    if (currSub === currRule) {
+      // console.log("push", [[...currMessage], [...currTarget]]);
+      queue.unshift([[...currMessage], [...currTarget]]);
+    }
+
+    if (currMessage.length === 0) {
+      continue;
+    }
+
+    const allMessage = currMessage.concat([currSub]);
+    const allTarget = [...currTarget].concat([currRule]);
+
+    for (let i = 0; i < allTarget.length; i++) {
+      const currSub = allTarget[i];
+      const possibleSubs = rules[currSub];
+
+      if (typeof possibleSubs === "string") {
+        continue;
+      }
+
+      possibleSubs.forEach((sub) => {
+        // console.log("push", [
+        //   allMessage
+        //     .slice(0, i)
+        //     .concat([sub])
+        //     .concat(allMessage.slice(i + 2)),
+        //   [...currTarget].concat([currRule]),
+        // ]);
+        queue.push([
+          [...allMessage],
+          allTarget
+            .slice(0, i)
+            .concat(sub)
+            .concat(allTarget.slice(i + 1)),
+        ]);
+      });
+    }
+
+    for (let i = 0; i < allMessage.length - 2; i++) {
+      const currSub = allMessage
+        .slice(allMessage.length - i - 2, allMessage.length - i)
+        .join(",");
+      const possibleSubs = graph.get(currSub) || [];
+
+      possibleSubs.forEach((sub) => {
+        // console.log("push", [
+        //   allMessage
+        //     .slice(0, i)
+        //     .concat([sub])
+        //     .concat(allMessage.slice(i + 2)),
+        //   [...currTarget].concat([currRule]),
+        // ]);
+        queue.push([
+          allMessage
+            .slice(0, allMessage.length - i - 2)
+            .concat([sub])
+            .concat(allMessage.slice(allMessage.length - i)),
+          [...allTarget],
+        ]);
+      });
     }
   }
 
-  matchRules.set(message.join(","), false);
   return false;
 };
 
-let globalRules: rules = null;
-let matchRules: Map<string, boolean> = null;
+let pd: Map<string, boolean>;
 const main = (vs: string[]): number => {
   const { messages, rules } = parseInput(vs);
-  globalRules = rules;
-  matchRules = new Map();
-
-  return messages.filter((message, i) => {
-    const decodedMessage = decodeMessage(rules, message);
-    console.log("index", i);
-    return solve(rules["0"][0] as string[], decodedMessage);
-  }).length;
+  const graph = graphFromRules(rules);
+  pd = new Map();
+  // console.log(messages[0]);
+  let maxLength = -1;
+  return (
+    messages
+      // .slice(0, 1)
+      .filter((message, i) => {
+        maxLength = Math.max(maxLength, message.length);
+        console.log("messages left", messages.length - i);
+        return compute(
+          decodeMessage(rules, message),
+          graph,
+          rules,
+          rules["0"][0] as string[]
+        );
+      }).length
+  );
+  return -1;
 };
 
 const main2 = (vs: string[]) => {};
