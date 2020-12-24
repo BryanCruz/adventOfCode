@@ -56,6 +56,42 @@ const compute = (messages: string[], rule: string): string[] => {
     );
 };
 
+const compute2 = (
+  messages: string[],
+  rule: string,
+  recursionsLeft: number
+): string[] => {
+  const targetRule = rules[rule];
+  if (typeof targetRule === "string") {
+    return messages
+      .filter((message) => message[0] === targetRule)
+      .map((message) => message.slice(1));
+  }
+
+  const possibleRules = targetRule;
+  return possibleRules
+    .map((ruleSequence) =>
+      rule !== "8" && rule !== "11"
+        ? ruleSequence.reduce(
+            (remainingMessages, currRule) =>
+              compute2(remainingMessages, currRule, recursionsLeft),
+            messages
+          )
+        : recursionsLeft > 0
+        ? ruleSequence.reduce(
+            (remainingMessages, currRule) =>
+              compute2(remainingMessages, currRule, recursionsLeft - 1),
+            messages
+          )
+        : []
+    )
+    .reduce(
+      (allPossibleSolutions, thesePossibleSolutions) =>
+        allPossibleSolutions.concat(thesePossibleSolutions),
+      []
+    );
+};
+
 const main = (vs: string[]): number => {
   const { messages, rules: miniRules } = parseInput(vs);
   rules = miniRules;
@@ -65,9 +101,36 @@ const main = (vs: string[]): number => {
   ).length;
 };
 
-const main2 = (vs: string[]) => {};
+const main2 = (vs: string[]) => {
+  const { messages, rules: changedRules } = parseInput(
+    vs.map((line) =>
+      line === "8: 42"
+        ? "8: 42 | 42 8"
+        : line === "11: 42 31"
+        ? "11: 42 31 | 42 11 31"
+        : line
+    )
+  );
+  rules = changedRules;
 
-const [vt, v] = ["inputT.txt", "input.txt"].map((fileName) =>
+  let previousValue = -1;
+  for (let i = 1; ; i++) {
+    const currentValue = messages.filter((message) =>
+      compute2([message], "0", 19).some((result) => result.length === 0)
+    ).length;
+
+    if (currentValue === previousValue) {
+      return currentValue;
+    }
+    previousValue = currentValue;
+  }
+};
+
+const [vt, vt2, v] = [
+  "inputT.txt",
+  "inputT2.txt",
+  "input.txt",
+].map((fileName) =>
   readFileSync(`${__dirname}/${fileName}`).toString().split("\n")
 );
 
@@ -76,5 +139,5 @@ console.log("test", main(vt));
 console.log("final", main(v));
 console.log("==========");
 console.log("Second Half");
-console.log("test", main2(vt));
+console.log("test", main2(vt2));
 console.log("final", main2(v));
