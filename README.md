@@ -1,6 +1,6 @@
-# Advent of Code 202{0,1}
+# Advent of Code
 
-My resolutions to [Advent of Code 2020](https://adventofcode.com) puzzles.
+My resolutions to [Advent of Code](https://adventofcode.com) puzzles.
 
 ## Usage
 
