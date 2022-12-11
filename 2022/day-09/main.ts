@@ -89,12 +89,6 @@ const getDirectionToBeClose = (
     return null;
   }
 
-  if (horizontalDistance == 0 || verticalDistance == 0) {
-    return [
-      findDirectionChange([tailRow, tailColumn], [headRow, headColumn])[0],
-    ];
-  }
-
   let [finalRow, finalColumn] = [headRow, headColumn];
 
   if (Math.abs(horizontalDistance) == 2) {
