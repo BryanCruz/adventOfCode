@@ -13,11 +13,9 @@ import { parseInput } from "./parse";
 
 export {};
 
-type Memo = { [key: string]: number };
-
 const main = (vs: string[]) => {
   const [start, finish, grid] = parseInput(vs);
-  return bfs(grid, start!, finish!);
+  return bfs(grid, finish!, [start!]);
 };
 
 const main2 = (vs: string[]) => {
@@ -32,45 +30,24 @@ const main2 = (vs: string[]) => {
     )
   );
 
-  return bfsWithMemo(grid, possibleStarts, finish!);
+  return bfs(grid, finish!, possibleStarts);
 };
 
-const bfs = (
-  grid: Grid,
-  start: Coordinate,
-  target: Coordinate,
-  memo?: Memo
-): number => {
-  const toVisitQueue: [Coordinate, number, Coordinate[]][] = [[start!, 0, []]];
+const bfs = (grid: Grid, start: Coordinate, targets: Coordinate[]): number => {
+  const toVisitQueue: [Coordinate, number][] = [[start!, 0]];
   const alreadyInQueue = new Set<string>([getKey(start!)]);
-  const startKey = getKey(start);
-  const targetKey = getKey(target);
+  const targetsSet = new Set<string>(targets.map(getKey));
+  const targetsMinSteps = [] as number[];
 
   while (true) {
     if (toVisitQueue.length === 0) {
-      memo![startKey] = Number.MAX_VALUE;
-      return Number.MAX_VALUE;
+      return Math.min(...targetsMinSteps);
     }
 
-    const [toVisit, steps, previous] = toVisitQueue.shift()!;
-    const toVisitKey = getKey(toVisit);
+    const [toVisit, steps] = toVisitQueue.shift()!;
 
-    const isTarget = toVisitKey === targetKey;
-    const isInMemo = memo && memo[toVisitKey] !== undefined;
-
-    if (isTarget || isInMemo) {
-      const baseSteps = isTarget ? 0 : memo![toVisitKey];
-      if (memo) {
-        previous.forEach((coordinate, i) => {
-          const key = getKey(coordinate);
-          const actualSteps = baseSteps + i + 1;
-          memo[key] = Math.min(actualSteps, memo[key] || actualSteps + 1);
-        });
-      }
-
-      if (!memo) {
-        return steps + baseSteps;
-      }
+    if (targetsSet.has(getKey(toVisit))) {
+      targetsMinSteps.push(steps);
     }
 
     directions.forEach((direction) => {
@@ -84,29 +61,11 @@ const bfs = (
         isMovementValid(toVisit, nextCoordinate, grid) &&
         !alreadyInQueue.has(getKey(nextCoordinate))
       ) {
-        toVisitQueue.push([
-          nextCoordinate,
-          steps + 1,
-          [toVisit].concat(previous),
-        ]);
+        toVisitQueue.push([nextCoordinate, steps + 1]);
         alreadyInQueue.add(getKey(nextCoordinate));
       }
     });
   }
-};
-
-const bfsWithMemo = (
-  grid: Grid,
-  possibleStarts: Coordinate[],
-  target: Coordinate
-) => {
-  const memo: Memo = {};
-
-  possibleStarts.forEach((start) => bfs(grid, start, target, memo));
-
-  return Math.min(
-    ...possibleStarts.map((possibleStart) => memo[getKey(possibleStart)])
-  );
 };
 
 const isMovementValid = (
@@ -115,7 +74,7 @@ const isMovementValid = (
   grid: Grid
 ): boolean => {
   const difference = grid[rowFrom][colFrom] - grid[rowTo][colTo];
-  return difference >= -1;
+  return difference <= 1;
 };
 
 const [vt, v] = ["inputT.txt", "input.txt"].map((fileName) =>
