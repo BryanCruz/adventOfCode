@@ -1,4 +1,4 @@
-import { Coordinate, Direction, Grid } from "./types";
+import { Coordinate, Direction, Grid, Point } from "./types";
 
 export const getKey = ([row, column]: Coordinate): string => `${row}:${column}`;
 
@@ -42,3 +42,11 @@ export const chunkify = <T>(collection: T[], chunkSize: number): T[][] =>
     },
     [[]] as T[][]
   );
+
+export const manhattanDistance = (a: Point, b: Point): number =>
+  Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+
+export const range = (a: number, b: number): number[] =>
+  Array(b - a + 1)
+    .fill(0)
+    .map((_, i) => i + a);
