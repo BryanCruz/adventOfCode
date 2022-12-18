@@ -44,24 +44,6 @@ const main2 = (vs: string[], min: number, max: number) => {
       return getTuningFrequency(point);
     }
   }
-
-  for (let y = max; y >= min; y--) {
-    console.log(y);
-    const segments = rings
-      .map((ring) => getSegmentsWithNoBeacon(ring, y))
-      .filter((seg) => seg !== null);
-
-    const minX = Math.max(min, Math.min(...segments.map((seg) => seg.a.x)));
-    const maxX = Math.min(max, Math.max(...segments.map((seg) => seg.b.x)));
-
-    const r = range(minX, maxX).find(
-      (x) => segments.filter((seg) => seg.a.x <= x && x <= seg.b.x).length === 0
-    );
-
-    if (r !== undefined) {
-      return getTuningFrequency({ x: r, y });
-    }
-  }
 };
 
 const mergeSegments = (lines: Line[]): Line[] => {
