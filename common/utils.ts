@@ -19,6 +19,13 @@ export const sumCoordinates = (
   [b1, b2]: Coordinate
 ): Coordinate => [a1 + b1, a2 + b2];
 
+export const scaleCoordinate = ([a, b]: Coordinate, n: number): Coordinate => [
+  n * a,
+  n * b,
+];
+
+export const coordinateAsString = ([a, b]: Coordinate): string => `${a}:${b}`;
+
 export const isCoordinateWithinBoundaries = (
   [row, column]: Coordinate,
   grid: Grid
